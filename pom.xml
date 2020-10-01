@@ -430,6 +430,13 @@
         <version>${project.version}</version>
       </dependency>
 
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <version>${project.version}</version>
+        <classifier>linux-x86_64</classifier>
+      </dependency>
+
       <!-- Needed for java11 and later as javax.activation is not part of the JDK anymore -->
       <dependency>
         <groupId>com.sun.activation</groupId>
