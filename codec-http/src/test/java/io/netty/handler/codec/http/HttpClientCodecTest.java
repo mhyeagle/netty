@@ -27,10 +27,10 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.CodecException;
 import io.netty.handler.codec.PrematureChannelClosureException;
 import io.netty.util.CharsetUtil;
@@ -125,8 +125,8 @@ public class HttpClientCodecTest {
         final CountDownLatch serverChannelLatch = new CountDownLatch(1);
         final CountDownLatch responseReceivedLatch = new CountDownLatch(1);
         try {
-            sb.group(new NioEventLoopGroup(2));
-            sb.channel(NioServerSocketChannel.class);
+            sb.group(new EpollEventLoopGroup(2));
+            sb.channel(EpollServerSocketChannel.class);
             sb.childHandler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) throws Exception {
@@ -169,8 +169,8 @@ public class HttpClientCodecTest {
                 }
             });
 
-            cb.group(new NioEventLoopGroup(1));
-            cb.channel(NioSocketChannel.class);
+            cb.group(new EpollEventLoopGroup(1));
+            cb.channel(EpollSocketChannel.class);
             cb.option(ChannelOption.ALLOW_HALF_CLOSURE, true);
             cb.handler(new ChannelInitializer<Channel>() {
                 @Override

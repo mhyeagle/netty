@@ -22,12 +22,12 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelFactory;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.oio.OioEventLoopGroup;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.channel.socket.oio.OioDatagramChannel;
 import io.netty.channel.socket.oio.OioServerSocketChannel;
 import io.netty.channel.socket.oio.OioSocketChannel;
@@ -61,9 +61,9 @@ public class SocketTestPermutation {
     protected static final int OIO_SO_TIMEOUT = 10;  // Use short timeout for faster runs.
 
     protected final EventLoopGroup nioBossGroup =
-            new NioEventLoopGroup(BOSSES, new DefaultThreadFactory("testsuite-nio-boss", true));
+            new EpollEventLoopGroup(BOSSES, new DefaultThreadFactory("testsuite-nio-boss", true));
     protected final EventLoopGroup nioWorkerGroup =
-            new NioEventLoopGroup(WORKERS, new DefaultThreadFactory("testsuite-nio-worker", true));
+            new EpollEventLoopGroup(WORKERS, new DefaultThreadFactory("testsuite-nio-worker", true));
     protected final EventLoopGroup oioBossGroup =
             new OioEventLoopGroup(Integer.MAX_VALUE, new DefaultThreadFactory("testsuite-oio-boss", true));
     protected final EventLoopGroup oioWorkerGroup =
@@ -151,7 +151,7 @@ public class SocketTestPermutation {
                     @Override
                     public ServerBootstrap newInstance() {
                         return new ServerBootstrap().group(nioBossGroup, nioWorkerGroup)
-                                .channel(NioServerSocketChannel.class);
+                                .channel(EpollServerSocketChannel.class);
                     }
                 },
                 new BootstrapFactory<ServerBootstrap>() {
@@ -170,7 +170,7 @@ public class SocketTestPermutation {
                 new BootstrapFactory<Bootstrap>() {
                     @Override
                     public Bootstrap newInstance() {
-                        return new Bootstrap().group(nioWorkerGroup).channel(NioSocketChannel.class);
+                        return new Bootstrap().group(nioWorkerGroup).channel(EpollSocketChannel.class);
                     }
                 },
                 new BootstrapFactory<Bootstrap>() {

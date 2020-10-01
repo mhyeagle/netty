@@ -19,8 +19,8 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -38,15 +38,15 @@ public final class HttpNativeServer {
 
     public static void main(String[] args) throws Exception {
         // Configure the server.
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new EpollEventLoopGroup(1);
+        EventLoopGroup workerGroup = new EpollEventLoopGroup();
         // Control status.
         boolean serverStartSucess = false;
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.option(ChannelOption.SO_BACKLOG, 1024);
             b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
+             .channel(EpollServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new HttpNativeServerInitializer());
 

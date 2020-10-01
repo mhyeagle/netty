@@ -19,8 +19,8 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.example.telnet.TelnetClient;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -42,11 +42,11 @@ public final class SecureChatClient {
         final SslContext sslCtx = SslContextBuilder.forClient()
             .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
-             .channel(NioSocketChannel.class)
+             .channel(EpollSocketChannel.class)
              .handler(new SecureChatClientInitializer(sslCtx));
 
             // Start the connection attempt.

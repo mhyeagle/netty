@@ -61,9 +61,9 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.local.LocalServerChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
@@ -400,13 +400,13 @@ public class SniHandlerTest {
                     .add("*.netty.io", nettyContext)
                     .add("sni.fake.site", sniContext).build();
             final SniHandler handler = new SniHandler(mapping);
-            EventLoopGroup group = new NioEventLoopGroup(2);
+            EventLoopGroup group = new EpollEventLoopGroup(2);
             Channel serverChannel = null;
             Channel clientChannel = null;
             try {
                 ServerBootstrap sb = new ServerBootstrap();
                 sb.group(group);
-                sb.channel(NioServerSocketChannel.class);
+                sb.channel(EpollServerSocketChannel.class);
                 sb.childHandler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {
@@ -427,7 +427,7 @@ public class SniHandlerTest {
 
                 Bootstrap cb = new Bootstrap();
                 cb.group(group);
-                cb.channel(NioSocketChannel.class);
+                cb.channel(EpollSocketChannel.class);
                 cb.handler(new ChannelInitializer<Channel>() {
                     @Override
                     protected void initChannel(Channel ch) throws Exception {

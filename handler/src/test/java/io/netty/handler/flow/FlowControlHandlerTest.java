@@ -30,9 +30,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
@@ -57,7 +57,7 @@ public class FlowControlHandlerTest {
 
     @BeforeClass
     public static void init() {
-        GROUP = new NioEventLoopGroup();
+        GROUP = new EpollEventLoopGroup();
     }
 
     @AfterClass
@@ -77,7 +77,7 @@ public class FlowControlHandlerTest {
 
         ServerBootstrap serverBootstrap = new ServerBootstrap();
         serverBootstrap.group(GROUP)
-            .channel(NioServerSocketChannel.class)
+            .channel(EpollServerSocketChannel.class)
             .childOption(ChannelOption.AUTO_READ, autoRead)
             .childHandler(new ChannelInitializer<Channel>() {
                 @Override
@@ -97,7 +97,7 @@ public class FlowControlHandlerTest {
         Bootstrap bootstrap = new Bootstrap();
 
         bootstrap.group(GROUP)
-            .channel(NioSocketChannel.class)
+            .channel(EpollSocketChannel.class)
             .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000)
             .handler(new ChannelInboundHandlerAdapter() {
                 @Override

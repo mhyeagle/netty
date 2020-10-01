@@ -17,8 +17,8 @@ package io.netty.example.socksproxy;
 
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 
@@ -27,12 +27,12 @@ public final class SocksServer {
     static final int PORT = Integer.parseInt(System.getProperty("port", "1080"));
 
     public static void main(String[] args) throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new EpollEventLoopGroup(1);
+        EventLoopGroup workerGroup = new EpollEventLoopGroup();
         try {
             ServerBootstrap b = new ServerBootstrap();
             b.group(bossGroup, workerGroup)
-             .channel(NioServerSocketChannel.class)
+             .channel(EpollServerSocketChannel.class)
              .handler(new LoggingHandler(LogLevel.INFO))
              .childHandler(new SocksServerInitializer());
             b.bind(PORT).sync().channel().closeFuture().sync();

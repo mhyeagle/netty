@@ -20,8 +20,8 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.junit.Test;
 
@@ -30,8 +30,8 @@ public class DefaultChannelGroupTest {
     // Test for #1183
     @Test
     public void testNotThrowBlockingOperationException() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup bossGroup = new EpollEventLoopGroup();
+        EventLoopGroup workerGroup = new EpollEventLoopGroup();
 
         final ChannelGroup allChannels = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 
@@ -43,7 +43,7 @@ public class DefaultChannelGroupTest {
                 allChannels.add(ctx.channel());
             }
         });
-        b.channel(NioServerSocketChannel.class);
+        b.channel(EpollServerSocketChannel.class);
 
         ChannelFuture f = b.bind(0).syncUninterruptibly();
 

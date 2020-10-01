@@ -19,7 +19,7 @@ import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.util.NetUtil;
 import org.junit.Test;
 
@@ -75,7 +75,7 @@ public class DefaultDnsCacheTest {
     }
 
     private static void testExpireWithTTL0(int days) {
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
 
         try {
             EventLoop loop = group.next();
@@ -88,7 +88,7 @@ public class DefaultDnsCacheTest {
 
     @Test
     public void testExpireWithToBigMinTTL() {
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
 
         try {
             EventLoop loop = group.next();

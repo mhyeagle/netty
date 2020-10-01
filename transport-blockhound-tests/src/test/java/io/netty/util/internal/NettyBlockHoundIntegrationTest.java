@@ -24,9 +24,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslHandler;
@@ -233,19 +233,19 @@ public class NettyBlockHoundIntegrationTest {
 
     private static void testHandshake(SslContext sslClientCtx, SslHandler clientSslHandler,
                                       SslHandler serverSslHandler) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(serverSslHandler)
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {

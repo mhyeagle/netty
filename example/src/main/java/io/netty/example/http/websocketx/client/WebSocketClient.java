@@ -21,9 +21,9 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
@@ -90,7 +90,7 @@ public final class WebSocketClient {
             sslCtx = null;
         }
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         try {
             // Connect with V13 (RFC 6455 aka HyBi-17). You can change it to V08 or V00.
             // If you change it to V00, ping is not supported and remember to change
@@ -102,7 +102,7 @@ public final class WebSocketClient {
 
             Bootstrap b = new Bootstrap();
             b.group(group)
-             .channel(NioSocketChannel.class)
+             .channel(EpollSocketChannel.class)
              .handler(new ChannelInitializer<SocketChannel>() {
                  @Override
                  protected void initChannel(SocketChannel ch) {

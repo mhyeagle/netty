@@ -28,9 +28,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.embedded.EmbeddedChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.EncoderException;
 import net.jpountz.lz4.LZ4BlockInputStream;
 import net.jpountz.lz4.LZ4Factory;
@@ -240,7 +240,7 @@ public class Lz4FrameEncoderTest extends AbstractEncoderTest {
 
     @Test(timeout = 3000)
     public void writingAfterClosedChannelDoesNotNPE() throws InterruptedException {
-        EventLoopGroup group = new NioEventLoopGroup(2);
+        EventLoopGroup group = new EpollEventLoopGroup(2);
         Channel serverChannel = null;
         Channel clientChannel = null;
         final CountDownLatch latch = new CountDownLatch(1);
@@ -248,7 +248,7 @@ public class Lz4FrameEncoderTest extends AbstractEncoderTest {
         try {
             ServerBootstrap sb = new ServerBootstrap();
             sb.group(group);
-            sb.channel(NioServerSocketChannel.class);
+            sb.channel(EpollServerSocketChannel.class);
             sb.childHandler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) throws Exception {
@@ -257,7 +257,7 @@ public class Lz4FrameEncoderTest extends AbstractEncoderTest {
 
             Bootstrap bs = new Bootstrap();
             bs.group(group);
-            bs.channel(NioSocketChannel.class);
+            bs.channel(EpollSocketChannel.class);
             bs.handler(new ChannelInitializer<Channel>() {
                 @Override
                 protected void initChannel(Channel ch) throws Exception {

@@ -29,7 +29,7 @@ import org.openjdk.jmh.annotations.TearDown;
 import org.openjdk.jmh.annotations.Threads;
 import org.openjdk.jmh.annotations.Warmup;
 
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.microbench.util.AbstractMicrobenchmark;
 
 @Warmup(iterations = 5, time = 3, timeUnit = TimeUnit.SECONDS)
@@ -54,7 +54,7 @@ public class ScheduleFutureTaskBenchmark extends AbstractMicrobenchmark {
 
         @Setup(Level.Trial)
         public void reset() {
-            eventLoop = (AbstractScheduledEventExecutor) new NioEventLoopGroup(1).next();
+            eventLoop = (AbstractScheduledEventExecutor) new EpollEventLoopGroup(1).next();
         }
 
         @Setup(Level.Invocation)

@@ -22,8 +22,8 @@ import io.netty.channel.ChannelFactory;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.channel.unix.DomainSocketAddress;
 import io.netty.channel.unix.tests.UnixTestUtils;
 import io.netty.testsuite.transport.TestsuitePermutation;
@@ -91,7 +91,7 @@ class EpollSocketTestPermutation extends SocketTestPermutation {
             @Override
             public ServerBootstrap newInstance() {
                 return new ServerBootstrap().group(nioBossGroup, nioWorkerGroup)
-                                            .channel(NioServerSocketChannel.class);
+                                            .channel(EpollServerSocketChannel.class);
             }
         });
 
@@ -111,7 +111,7 @@ class EpollSocketTestPermutation extends SocketTestPermutation {
                 new BootstrapFactory<Bootstrap>() {
                     @Override
                     public Bootstrap newInstance() {
-                        return new Bootstrap().group(nioWorkerGroup).channel(NioSocketChannel.class);
+                        return new Bootstrap().group(nioWorkerGroup).channel(EpollSocketChannel.class);
                     }
                 }
         );

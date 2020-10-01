@@ -43,13 +43,13 @@ import java.util.Map;
  * A {@link io.netty.channel.socket.ServerSocketChannel} implementation which uses
  * NIO selector based implementation to accept new connections.
  */
-public class NioServerSocketChannel extends AbstractNioMessageChannel
+public class EpollServerSocketChannel extends AbstractNioMessageChannel
                              implements io.netty.channel.socket.ServerSocketChannel {
 
     private static final ChannelMetadata METADATA = new ChannelMetadata(false, 16);
     private static final SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();
 
-    private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioServerSocketChannel.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(EpollServerSocketChannel.class);
 
     private static ServerSocketChannel newSocket(SelectorProvider provider) {
         try {
@@ -71,23 +71,23 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
     /**
      * Create a new instance
      */
-    public NioServerSocketChannel() {
+    public EpollServerSocketChannel() {
         this(newSocket(DEFAULT_SELECTOR_PROVIDER));
     }
 
     /**
      * Create a new instance using the given {@link SelectorProvider}.
      */
-    public NioServerSocketChannel(SelectorProvider provider) {
+    public EpollServerSocketChannel(SelectorProvider provider) {
         this(newSocket(provider));
     }
 
     /**
      * Create a new instance using the given {@link ServerSocketChannel}.
      */
-    public NioServerSocketChannel(ServerSocketChannel channel) {
+    public EpollServerSocketChannel(ServerSocketChannel channel) {
         super(null, channel, SelectionKey.OP_ACCEPT);
-        config = new NioServerSocketChannelConfig(this, javaChannel().socket());
+        config = new EpollServerSocketChannelConfig(this, javaChannel().socket());
     }
 
     @Override
@@ -148,7 +148,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
 
         try {
             if (ch != null) {
-                buf.add(new NioSocketChannel(this, ch));
+                buf.add(new EpollSocketChannel(this, ch));
                 return 1;
             }
         } catch (Throwable t) {
@@ -196,8 +196,8 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         throw new UnsupportedOperationException();
     }
 
-    private final class NioServerSocketChannelConfig extends DefaultServerSocketChannelConfig {
-        private NioServerSocketChannelConfig(NioServerSocketChannel channel, ServerSocket javaSocket) {
+    private final class EpollServerSocketChannelConfig extends DefaultServerSocketChannelConfig {
+        private EpollServerSocketChannelConfig(EpollServerSocketChannel channel, ServerSocket javaSocket) {
             super(channel, javaSocket);
         }
 
@@ -231,7 +231,7 @@ public class NioServerSocketChannel extends AbstractNioMessageChannel
         }
 
         private ServerSocketChannel jdkChannel() {
-            return ((NioServerSocketChannel) channel).javaChannel();
+            return ((EpollServerSocketChannel) channel).javaChannel();
         }
     }
 

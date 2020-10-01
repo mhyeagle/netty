@@ -54,8 +54,8 @@ import static io.netty.channel.internal.ChannelUtils.MAX_BYTES_PER_GATHERING_WRI
 /**
  * {@link io.netty.channel.socket.SocketChannel} which uses NIO selector based implementation.
  */
-public class NioSocketChannel extends AbstractNioByteChannel implements io.netty.channel.socket.SocketChannel {
-    private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioSocketChannel.class);
+public class EpollSocketChannel extends AbstractNioByteChannel implements io.netty.channel.socket.SocketChannel {
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(EpollSocketChannel.class);
     private static final SelectorProvider DEFAULT_SELECTOR_PROVIDER = SelectorProvider.provider();
 
     private static SocketChannel newSocket(SelectorProvider provider) {
@@ -77,21 +77,21 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
     /**
      * Create a new instance
      */
-    public NioSocketChannel() {
+    public EpollSocketChannel() {
         this(DEFAULT_SELECTOR_PROVIDER);
     }
 
     /**
      * Create a new instance using the given {@link SelectorProvider}.
      */
-    public NioSocketChannel(SelectorProvider provider) {
+    public EpollSocketChannel(SelectorProvider provider) {
         this(newSocket(provider));
     }
 
     /**
      * Create a new instance using the given {@link SocketChannel}.
      */
-    public NioSocketChannel(SocketChannel socket) {
+    public EpollSocketChannel(SocketChannel socket) {
         this(null, socket);
     }
 
@@ -101,9 +101,9 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
      * @param parent    the {@link Channel} which created this instance or {@code null} if it was created by the user
      * @param socket    the {@link SocketChannel} which will be used
      */
-    public NioSocketChannel(Channel parent, SocketChannel socket) {
+    public EpollSocketChannel(Channel parent, SocketChannel socket) {
         super(parent, socket);
-        config = new NioSocketChannelConfig(this, socket.socket());
+        config = new EpollSocketChannelConfig(this, socket.socket());
     }
 
     @Override
@@ -368,10 +368,10 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         // make a best effort to adjust as OS behavior changes.
         if (attempted == written) {
             if (attempted << 1 > oldMaxBytesPerGatheringWrite) {
-                ((NioSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted << 1);
+                ((EpollSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted << 1);
             }
         } else if (attempted > MAX_BYTES_PER_GATHERING_WRITE_ATTEMPTED_LOW_THRESHOLD && written < attempted >>> 1) {
-            ((NioSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted >>> 1);
+            ((EpollSocketChannelConfig) config).setMaxBytesPerGatheringWrite(attempted >>> 1);
         }
     }
 
@@ -388,7 +388,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
             }
 
             // Ensure the pending writes are made of ByteBufs only.
-            int maxBytesPerGatheringWrite = ((NioSocketChannelConfig) config).getMaxBytesPerGatheringWrite();
+            int maxBytesPerGatheringWrite = ((EpollSocketChannelConfig) config).getMaxBytesPerGatheringWrite();
             ByteBuffer[] nioBuffers = in.nioBuffers(1024, maxBytesPerGatheringWrite);
             int nioBufferCnt = in.nioBufferCount();
 
@@ -440,10 +440,10 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
 
     @Override
     protected AbstractNioUnsafe newUnsafe() {
-        return new NioSocketChannelUnsafe();
+        return new EpollSocketChannelUnsafe();
     }
 
-    private final class NioSocketChannelUnsafe extends NioByteUnsafe {
+    private final class EpollSocketChannelUnsafe extends NioByteUnsafe {
         @Override
         protected Executor prepareToClose() {
             try {
@@ -464,9 +464,9 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
     }
 
-    private final class NioSocketChannelConfig extends DefaultSocketChannelConfig {
+    private final class EpollSocketChannelConfig extends DefaultSocketChannelConfig {
         private volatile int maxBytesPerGatheringWrite = Integer.MAX_VALUE;
-        private NioSocketChannelConfig(NioSocketChannel channel, Socket javaSocket) {
+        private EpollSocketChannelConfig(EpollSocketChannel channel, Socket javaSocket) {
             super(channel, javaSocket);
             calculateMaxBytesPerGatheringWrite();
         }
@@ -477,7 +477,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
 
         @Override
-        public NioSocketChannelConfig setSendBufferSize(int sendBufferSize) {
+        public EpollSocketChannelConfig setSendBufferSize(int sendBufferSize) {
             super.setSendBufferSize(sendBufferSize);
             calculateMaxBytesPerGatheringWrite();
             return this;
@@ -524,7 +524,7 @@ public class NioSocketChannel extends AbstractNioByteChannel implements io.netty
         }
 
         private SocketChannel jdkChannel() {
-            return ((NioSocketChannel) channel).javaChannel();
+            return ((EpollSocketChannel) channel).javaChannel();
         }
     }
 }

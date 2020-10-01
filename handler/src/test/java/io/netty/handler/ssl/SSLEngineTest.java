@@ -29,10 +29,10 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.ssl.ApplicationProtocolConfig.Protocol;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
@@ -727,8 +727,8 @@ public abstract class SSLEngineTest {
         sb = new ServerBootstrap();
         cb = new Bootstrap();
 
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
         sb.childHandler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -772,8 +772,8 @@ public abstract class SSLEngineTest {
             }
         });
 
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -884,8 +884,8 @@ public abstract class SSLEngineTest {
         sb = new ServerBootstrap();
         cb = new Bootstrap();
 
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
         sb.childHandler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -927,8 +927,8 @@ public abstract class SSLEngineTest {
         });
 
         final Promise<Void> clientWritePromise = ImmediateEventExecutor.INSTANCE.newPromise();
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -1071,8 +1071,8 @@ public abstract class SSLEngineTest {
         sb = new ServerBootstrap();
         cb = new Bootstrap();
 
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
         sb.childHandler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) {
@@ -1113,8 +1113,8 @@ public abstract class SSLEngineTest {
             }
         });
 
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -1310,8 +1310,8 @@ public abstract class SSLEngineTest {
                                         .ciphers(ciphers())
                                         .build());
         sb = new ServerBootstrap()
-                .group(new NioEventLoopGroup(1))
-                .channel(NioServerSocketChannel.class)
+                .group(new EpollEventLoopGroup(1))
+                .channel(EpollServerSocketChannel.class)
                 .childHandler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
@@ -1371,8 +1371,8 @@ public abstract class SSLEngineTest {
                                         .build());
 
         cb = new Bootstrap();
-        cb.group(new NioEventLoopGroup(1))
-                .channel(NioSocketChannel.class)
+        cb.group(new EpollEventLoopGroup(1))
+                .channel(EpollSocketChannel.class)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override
                     public void initChannel(SocketChannel ch) {
@@ -1671,8 +1671,8 @@ public abstract class SSLEngineTest {
         sb = new ServerBootstrap();
         cb = new Bootstrap();
 
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
         sb.childHandler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -1701,8 +1701,8 @@ public abstract class SSLEngineTest {
             }
         });
 
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -1755,8 +1755,8 @@ public abstract class SSLEngineTest {
                                  .ciphers(ciphers()).build());
 
         sb = new ServerBootstrap();
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
 
         final Promise<String> promise = sb.config().group().next().newPromise();
         serverChannel = sb.childHandler(new ChannelInitializer<Channel>() {
@@ -1832,8 +1832,8 @@ public abstract class SSLEngineTest {
                 .sslContextProvider(clientSslContextProvider())
                 .protocols(protocols()).ciphers(ciphers()).build());
         cb = new Bootstrap();
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         clientChannel = cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -3503,8 +3503,8 @@ public abstract class SSLEngineTest {
 
         try {
             sb = new ServerBootstrap();
-            sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-            sb.channel(NioServerSocketChannel.class);
+            sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+            sb.channel(EpollServerSocketChannel.class);
 
             final Promise<SecretKey> promise = sb.config().group().next().newPromise();
             serverChannel = sb.childHandler(new ChannelInitializer<Channel>() {

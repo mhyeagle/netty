@@ -26,9 +26,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import io.netty.handler.ssl.util.SimpleTrustManagerFactory;
@@ -126,7 +126,7 @@ public class ParameterizedSslHandlerTest {
                 .trustManager(InsecureTrustManagerFactory.INSTANCE)
                 .sslProvider(clientProvider).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         try {
@@ -142,7 +142,7 @@ public class ParameterizedSslHandlerTest {
 
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -201,7 +201,7 @@ public class ParameterizedSslHandlerTest {
 
             cc = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -306,14 +306,14 @@ public class ParameterizedSslHandlerTest {
                         ResourcesUtil.getFile(getClass(), "test_unencrypted.pem"))
                 .sslProvider(clientProvider).build();
 
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        EpollEventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         try {
             final Promise<Void> promise = group.next().newPromise();
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -330,7 +330,7 @@ public class ParameterizedSslHandlerTest {
 
             cc = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -397,7 +397,7 @@ public class ParameterizedSslHandlerTest {
                                                          .protocols(SslUtils.PROTOCOL_TLS_V1_2)
                                                          .build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         try {
@@ -406,7 +406,7 @@ public class ParameterizedSslHandlerTest {
 
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -429,7 +429,7 @@ public class ParameterizedSslHandlerTest {
 
             cc = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {

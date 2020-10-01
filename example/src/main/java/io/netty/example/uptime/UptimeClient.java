@@ -20,9 +20,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 
 
@@ -44,9 +44,9 @@ public final class UptimeClient {
     private static final Bootstrap bs = new Bootstrap();
 
     public static void main(String[] args) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         bs.group(group)
-                .channel(NioSocketChannel.class)
+                .channel(EpollSocketChannel.class)
                 .remoteAddress(HOST, PORT)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     @Override

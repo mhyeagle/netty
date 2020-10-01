@@ -40,9 +40,9 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import io.netty.channel.local.LocalAddress;
 import io.netty.channel.local.LocalChannel;
 import io.netty.channel.local.LocalServerChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.handler.codec.CodecException;
 import io.netty.handler.codec.DecoderException;
@@ -448,14 +448,14 @@ public class SslHandlerTest {
 
     @Test(timeout = 30000)
     public void testRemoval() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup();
+        EpollEventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         try {
             final Promise<Void> clientPromise = group.next().newPromise();
             Bootstrap bootstrap = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(newHandler(SslContextBuilder.forClient().trustManager(
                             InsecureTrustManagerFactory.INSTANCE).build(), clientPromise));
 
@@ -463,7 +463,7 @@ public class SslHandlerTest {
             final Promise<Void> serverPromise = group.next().newPromise();
             ServerBootstrap serverBootstrap = new ServerBootstrap()
                     .group(group, group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(newHandler(SslContextBuilder.forServer(ssc.certificate(), ssc.privateKey()).build(),
                             serverPromise));
             sc = serverBootstrap.bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
@@ -670,7 +670,7 @@ public class SslHandlerTest {
         final SslContext sslClientCtx = SslContextBuilder.forClient()
                 .trustManager(InsecureTrustManagerFactory.INSTANCE).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final CountDownLatch serverReceiveLatch = new CountDownLatch(1);
@@ -678,7 +678,7 @@ public class SslHandlerTest {
             final int expectedBytes = 11;
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -698,7 +698,7 @@ public class SslHandlerTest {
 
             cc = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -740,7 +740,7 @@ public class SslHandlerTest {
                 .trustManager(new SelfSignedCertificate().cert())
                 .build();
 
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
         Channel sc = null;
         Channel cc = null;
         try {
@@ -813,7 +813,7 @@ public class SslHandlerTest {
                                                          .trustManager(InsecureTrustManagerFactory.INSTANCE)
                                                          .sslProvider(SslProvider.JDK).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final CountDownLatch activeLatch = new CountDownLatch(1);
@@ -822,13 +822,13 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInboundHandlerAdapter())
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
 
             cc = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -895,7 +895,7 @@ public class SslHandlerTest {
                                                          .trustManager(InsecureTrustManagerFactory.INSTANCE)
                                                          .sslProvider(SslProvider.JDK).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final SslHandler sslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT);
@@ -904,13 +904,13 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInboundHandlerAdapter())
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -990,7 +990,7 @@ public class SslHandlerTest {
         final SslContext sslServerCtx = SslContextBuilder.forServer(cert.key(), cert.cert())
                 .sslProvider(SslProvider.JDK).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final SslHandler clientSslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT, executor);
@@ -999,13 +999,13 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(serverSslHandler)
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1047,7 +1047,7 @@ public class SslHandlerTest {
         final SslContext sslServerCtx = SslContextBuilder.forServer(cert.key(), cert.cert())
                 .sslProvider(SslProvider.JDK).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final SslHandler clientSslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT, new Executor() {
@@ -1077,13 +1077,13 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(serverSslHandler)
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1159,7 +1159,7 @@ public class SslHandlerTest {
             ((OpenSslSessionContext) sslServerCtx.sessionContext()).setTicketKeys();
         }
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final SslHandler clientSslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT);
@@ -1171,7 +1171,7 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1190,7 +1190,7 @@ public class SslHandlerTest {
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1294,7 +1294,7 @@ public class SslHandlerTest {
         final SslContext sslServerCtx = SslContextBuilder.forServer(cert.key(), cert.cert())
                 .sslProvider(SslProvider.JDK).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         final SslHandler clientSslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT);
         final SslHandler serverSslHandler = sslServerCtx.newHandler(UnpooledByteBufAllocator.DEFAULT);
@@ -1304,7 +1304,7 @@ public class SslHandlerTest {
             final BlockingQueue<Object> errorQueue = new LinkedBlockingQueue<Object>();
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1325,7 +1325,7 @@ public class SslHandlerTest {
                     .bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
             final ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {
@@ -1408,7 +1408,7 @@ public class SslHandlerTest {
                 .ciphers(Collections.singleton(serverCipher))
                 .sslProvider(provider).build();
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         Channel sc = null;
         Channel cc = null;
         final SslHandler clientSslHandler = sslClientCtx.newHandler(UnpooledByteBufAllocator.DEFAULT);
@@ -1436,7 +1436,7 @@ public class SslHandlerTest {
         try {
             sc = new ServerBootstrap()
                     .group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) throws Exception {
@@ -1448,7 +1448,7 @@ public class SslHandlerTest {
 
             ChannelFuture future = new Bootstrap()
                     .group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {

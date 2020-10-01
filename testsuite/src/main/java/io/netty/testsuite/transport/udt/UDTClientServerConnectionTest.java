@@ -24,7 +24,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.udt.UdtChannel;
 import io.netty.channel.udt.nio.NioUdtProvider;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
@@ -70,7 +70,7 @@ public class UDTClientServerConnectionTest {
         public void run() {
             final Bootstrap boot = new Bootstrap();
             final ThreadFactory clientFactory = new DefaultThreadFactory("client");
-            final NioEventLoopGroup connectGroup = new NioEventLoopGroup(1,
+            final EpollEventLoopGroup connectGroup = new EpollEventLoopGroup(1,
                     clientFactory, NioUdtProvider.BYTE_PROVIDER);
             try {
                 boot.group(connectGroup)
@@ -196,9 +196,9 @@ public class UDTClientServerConnectionTest {
             final ServerBootstrap boot = new ServerBootstrap();
             final ThreadFactory acceptFactory = new DefaultThreadFactory("accept");
             final ThreadFactory serverFactory = new DefaultThreadFactory("server");
-            final NioEventLoopGroup acceptGroup = new NioEventLoopGroup(1,
+            final EpollEventLoopGroup acceptGroup = new EpollEventLoopGroup(1,
                     acceptFactory, NioUdtProvider.BYTE_PROVIDER);
-            final NioEventLoopGroup connectGroup = new NioEventLoopGroup(1,
+            final EpollEventLoopGroup connectGroup = new EpollEventLoopGroup(1,
                     serverFactory, NioUdtProvider.BYTE_PROVIDER);
             try {
                 boot.group(acceptGroup, connectGroup)

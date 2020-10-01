@@ -23,7 +23,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.socksx.SocksMessage;
 import io.netty.handler.codec.socksx.v4.DefaultSocks4CommandResponse;
 import io.netty.handler.codec.socksx.v4.Socks4CommandRequest;
@@ -72,7 +72,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
 
             final Channel inboundChannel = ctx.channel();
             b.group(inboundChannel.eventLoop())
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .handler(new DirectClientHandler(promise));
@@ -125,7 +125,7 @@ public final class SocksServerConnectHandler extends SimpleChannelInboundHandler
 
             final Channel inboundChannel = ctx.channel();
             b.group(inboundChannel.eventLoop())
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 10000)
                     .option(ChannelOption.SO_KEEPALIVE, true)
                     .handler(new DirectClientHandler(promise));

@@ -18,7 +18,7 @@ import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.kqueue.KQueue;
 import io.netty.channel.kqueue.KQueueEventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.microbench.util.AbstractMicrobenchmark;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import io.netty.util.internal.PlatformDependent;
@@ -169,14 +169,14 @@ public class BurstCostExecutorsBenchmark extends AbstractMicrobenchmark {
         spinning,
         defaultEventExecutor,
         juc,
-        nioEventLoop,
+        EpollEventLoop,
         epollEventLoop,
         kqueueEventLoop
     }
 
     @Param({ "1", "10" })
     private int burstLength;
-    @Param({ "spinning", "epollEventLoop", "nioEventLoop", "defaultEventExecutor", "juc", "kqueueEventLoop" })
+    @Param({ "spinning", "epollEventLoop", "EpollEventLoop", "defaultEventExecutor", "juc", "kqueueEventLoop" })
     private String executorType;
     @Param({ "0", "10" })
     private int work;
@@ -204,11 +204,11 @@ public class BurstCostExecutorsBenchmark extends AbstractMicrobenchmark {
             executor = Executors.newSingleThreadScheduledExecutor();
             executorToShutdown = executor;
             break;
-        case nioEventLoop:
-            NioEventLoopGroup nioEventLoopGroup = new NioEventLoopGroup(1);
-            nioEventLoopGroup.setIoRatio(1);
-            executor = nioEventLoopGroup.next();
-            executorToShutdown = nioEventLoopGroup;
+        case EpollEventLoop:
+            EpollEventLoopGroup EpollEventLoopGroup = new EpollEventLoopGroup(1);
+            EpollEventLoopGroup.setIoRatio(1);
+            executor = EpollEventLoopGroup.next();
+            executorToShutdown = EpollEventLoopGroup;
             break;
         case epollEventLoop:
             Epoll.ensureAvailability();

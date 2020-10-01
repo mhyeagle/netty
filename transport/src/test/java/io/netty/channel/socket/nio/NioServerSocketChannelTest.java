@@ -17,7 +17,7 @@ package io.netty.channel.socket.nio;
 
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -28,13 +28,13 @@ import java.net.StandardSocketOptions;
 import java.nio.channels.NetworkChannel;
 import java.nio.channels.ServerSocketChannel;
 
-public class NioServerSocketChannelTest extends AbstractNioChannelTest<NioServerSocketChannel> {
+public class EpollServerSocketChannelTest extends AbstractNioChannelTest<EpollServerSocketChannel> {
 
     @Test
     public void testCloseOnError() throws Exception {
         ServerSocketChannel jdkChannel = ServerSocketChannel.open();
-        NioServerSocketChannel serverSocketChannel = new NioServerSocketChannel(jdkChannel);
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EpollServerSocketChannel serverSocketChannel = new EpollServerSocketChannel(jdkChannel);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
         try {
             group.register(serverSocketChannel).syncUninterruptibly();
             serverSocketChannel.bind(new InetSocketAddress(0)).syncUninterruptibly();
@@ -48,8 +48,8 @@ public class NioServerSocketChannelTest extends AbstractNioChannelTest<NioServer
 
     @Test
     public void testIsActiveFalseAfterClose()  {
-        NioServerSocketChannel serverSocketChannel = new NioServerSocketChannel();
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EpollServerSocketChannel serverSocketChannel = new EpollServerSocketChannel();
+        EventLoopGroup group = new EpollEventLoopGroup(1);
         try {
             group.register(serverSocketChannel).syncUninterruptibly();
             Channel channel = serverSocketChannel.bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
@@ -64,12 +64,12 @@ public class NioServerSocketChannelTest extends AbstractNioChannelTest<NioServer
     }
 
     @Override
-    protected NioServerSocketChannel newNioChannel() {
-        return new NioServerSocketChannel();
+    protected EpollServerSocketChannel newNioChannel() {
+        return new EpollServerSocketChannel();
     }
 
     @Override
-    protected NetworkChannel jdkChannel(NioServerSocketChannel channel) {
+    protected NetworkChannel jdkChannel(EpollServerSocketChannel channel) {
         return channel.javaChannel();
     }
 

@@ -21,9 +21,9 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.memcache.binary.BinaryMemcacheClientCodec;
 import io.netty.handler.codec.memcache.binary.BinaryMemcacheObjectAggregator;
 import io.netty.handler.ssl.SslContext;
@@ -52,11 +52,11 @@ public final class MemcacheClient {
             sslCtx = null;
         }
 
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
             b.group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) throws Exception {

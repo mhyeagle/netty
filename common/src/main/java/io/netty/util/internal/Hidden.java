@@ -41,7 +41,7 @@ class Hidden {
         @Override
         public void applyTo(BlockHound.Builder builder) {
             builder.allowBlockingCallsInside(
-                    "io.netty.channel.nio.NioEventLoop",
+                    "io.netty.channel.nio.EpollEventLoop",
                     "handleLoopException"
             );
 

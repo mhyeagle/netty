@@ -20,7 +20,7 @@ import com.yammer.metrics.Metrics;
 import com.yammer.metrics.core.Meter;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.udt.nio.NioUdtByteRendezvousChannel;
 import io.netty.channel.udt.nio.NioUdtProvider;
 import io.netty.test.udt.util.EchoByteHandler;
@@ -70,9 +70,9 @@ public class NioUdtByteRendezvousChannelTest extends AbstractUdtTest {
         final EchoByteHandler handler1 = new EchoByteHandler(rate1, messageSize);
         final EchoByteHandler handler2 = new EchoByteHandler(rate2, messageSize);
 
-        final NioEventLoopGroup group1 = new NioEventLoopGroup(
+        final EpollEventLoopGroup group1 = new EpollEventLoopGroup(
                 1, Executors.defaultThreadFactory(), NioUdtProvider.BYTE_PROVIDER);
-        final NioEventLoopGroup group2 = new NioEventLoopGroup(
+        final EpollEventLoopGroup group2 = new EpollEventLoopGroup(
                 1, Executors.defaultThreadFactory(), NioUdtProvider.BYTE_PROVIDER);
 
         final Bootstrap boot1 = new Bootstrap();

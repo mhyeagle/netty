@@ -30,7 +30,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.util.CharsetUtil;
 import io.netty.util.NetUtil;
@@ -57,19 +57,19 @@ import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
 
-public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChannel> {
+public class EpollSocketChannelTest extends AbstractNioChannelTest<EpollSocketChannel> {
 
     /**
      * Reproduces the issue #1600
      */
     @Test
     public void testFlushCloseReentrance() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
         try {
             final Queue<ChannelFuture> futures = new LinkedBlockingQueue<ChannelFuture>();
 
             ServerBootstrap sb = new ServerBootstrap();
-            sb.group(group).channel(NioServerSocketChannel.class);
+            sb.group(group).channel(EpollServerSocketChannel.class);
             sb.childOption(ChannelOption.SO_SNDBUF, 1024);
             sb.childHandler(new ChannelInboundHandlerAdapter() {
                 @Override
@@ -121,10 +121,10 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
      */
     @Test
     public void testFlushAfterGatheredFlush() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
         try {
             ServerBootstrap sb = new ServerBootstrap();
-            sb.group(group).channel(NioServerSocketChannel.class);
+            sb.group(group).channel(EpollServerSocketChannel.class);
             sb.childHandler(new ChannelInboundHandlerAdapter() {
                 @Override
                 public void channelActive(final ChannelHandlerContext ctx) throws Exception {
@@ -170,7 +170,7 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
     }
 
     private static void testChannelReRegisterRead(final boolean sameEventLoop) throws Exception {
-        final EventLoopGroup group = new NioEventLoopGroup(2);
+        final EventLoopGroup group = new EpollEventLoopGroup(2);
         final CountDownLatch latch = new CountDownLatch(1);
 
         // Just some random bytes
@@ -182,7 +182,7 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
         ServerBootstrap b = new ServerBootstrap();
         try {
             b.group(group)
-             .channel(NioServerSocketChannel.class)
+             .channel(EpollServerSocketChannel.class)
              .childOption(ChannelOption.SO_KEEPALIVE, true)
              .childHandler(new ChannelInitializer<Channel>() {
                  @Override
@@ -230,7 +230,7 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
             sc = b.bind(0).syncUninterruptibly().channel();
 
             Bootstrap bootstrap = new Bootstrap();
-            bootstrap.group(group).channel(NioSocketChannel.class);
+            bootstrap.group(group).channel(EpollSocketChannel.class);
             bootstrap.handler(new ChannelInboundHandlerAdapter());
             cc = bootstrap.connect(sc.localAddress()).syncUninterruptibly().channel();
             cc.writeAndFlush(Unpooled.wrappedBuffer(bytes)).syncUninterruptibly();
@@ -248,13 +248,13 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
 
     @Test(timeout = 3000)
     public void testShutdownOutputAndClose() throws IOException {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
         ServerSocket socket = new ServerSocket();
         socket.bind(new InetSocketAddress(0));
         Socket accepted = null;
         try {
             Bootstrap sb = new Bootstrap();
-            sb.group(group).channel(NioSocketChannel.class);
+            sb.group(group).channel(EpollSocketChannel.class);
             sb.handler(new ChannelInboundHandlerAdapter());
 
             SocketChannel channel = (SocketChannel) sb.connect(socket.getLocalSocketAddress())
@@ -282,12 +282,12 @@ public class NioSocketChannelTest extends AbstractNioChannelTest<NioSocketChanne
     }
 
     @Override
-    protected NioSocketChannel newNioChannel() {
-        return new NioSocketChannel();
+    protected EpollSocketChannel newNioChannel() {
+        return new EpollSocketChannel();
     }
 
     @Override
-    protected NetworkChannel jdkChannel(NioSocketChannel channel) {
+    protected NetworkChannel jdkChannel(EpollSocketChannel channel) {
         return channel.javaChannel();
     }
 

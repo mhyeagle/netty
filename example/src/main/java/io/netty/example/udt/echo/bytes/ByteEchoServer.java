@@ -19,7 +19,7 @@ import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.udt.UdtChannel;
 import io.netty.channel.udt.nio.NioUdtProvider;
 import io.netty.handler.logging.LogLevel;
@@ -40,8 +40,8 @@ public final class ByteEchoServer {
     public static void main(String[] args) throws Exception {
         final ThreadFactory acceptFactory = new DefaultThreadFactory("accept");
         final ThreadFactory connectFactory = new DefaultThreadFactory("connect");
-        final NioEventLoopGroup acceptGroup = new NioEventLoopGroup(1, acceptFactory, NioUdtProvider.BYTE_PROVIDER);
-        final NioEventLoopGroup connectGroup = new NioEventLoopGroup(1, connectFactory, NioUdtProvider.BYTE_PROVIDER);
+        final EpollEventLoopGroup acceptGroup = new EpollEventLoopGroup(1, acceptFactory, NioUdtProvider.BYTE_PROVIDER);
+        final EpollEventLoopGroup connectGroup = new EpollEventLoopGroup(1, connectFactory, NioUdtProvider.BYTE_PROVIDER);
 
         // Configure the server.
         try {

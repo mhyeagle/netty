@@ -25,12 +25,12 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.EventLoop;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ReflectiveChannelFactory;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.dns.DefaultDnsQuestion;
 import io.netty.handler.codec.dns.DnsQuestion;
 import io.netty.handler.codec.dns.DnsRawRecord;
@@ -318,7 +318,7 @@ public class DnsNameResolverTest {
     }
 
     private static final TestDnsServer dnsServer = new TestDnsServer(DOMAINS_ALL);
-    private static final EventLoopGroup group = new NioEventLoopGroup(1);
+    private static final EventLoopGroup group = new EpollEventLoopGroup(1);
 
     @Rule
     public ExpectedException expectedException = ExpectedException.none();
@@ -1277,7 +1277,7 @@ public class DnsNameResolverTest {
                 cache ? new DefaultAuthoritativeDnsServerCache() : NoopAuthoritativeDnsServerCache.INSTANCE);
         TestRecursiveCacheDnsQueryLifecycleObserverFactory lifecycleObserverFactory =
                 new TestRecursiveCacheDnsQueryLifecycleObserverFactory();
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
         final DnsNameResolver resolver = new DnsNameResolver(
                 group.next(), new ReflectiveChannelFactory<DatagramChannel>(NioDatagramChannel.class),
                 NoopDnsCache.INSTANCE, nsCache, lifecycleObserverFactory, 3000, ResolvedAddressTypes.IPV4_ONLY, true,
@@ -1438,7 +1438,7 @@ public class DnsNameResolverTest {
             }
         };
         redirectServer.start();
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
         final DnsNameResolver resolver = new DnsNameResolver(
                 group.next(), new ReflectiveChannelFactory<DatagramChannel>(NioDatagramChannel.class),
                 cache, authoritativeDnsServerCache, NoopDnsQueryLifecycleObserverFactory.INSTANCE, 2000,
@@ -1574,7 +1574,7 @@ public class DnsNameResolverTest {
             }
         };
         redirectServer.start();
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
 
         final List<InetSocketAddress> cached = new CopyOnWriteArrayList<InetSocketAddress>();
         final AuthoritativeDnsServerCache authoritativeDnsServerCache = new AuthoritativeDnsServerCache() {
@@ -1704,7 +1704,7 @@ public class DnsNameResolverTest {
             }
         };
         redirectServer.start();
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
 
         final List<InetSocketAddress> cached = new CopyOnWriteArrayList<InetSocketAddress>();
         final AuthoritativeDnsServerCache authoritativeDnsServerCache = new AuthoritativeDnsServerCache() {
@@ -2906,7 +2906,7 @@ public class DnsNameResolverTest {
                 serverSocket = new ServerSocket(dnsServer2.localAddress().getPort());
                 serverSocket.setReuseAddress(true);
 
-                builder.socketChannelType(NioSocketChannel.class);
+                builder.socketChannelType(EpollSocketChannel.class);
             }
             resolver = builder.build();
             if (truncatedBecauseOfMtu) {

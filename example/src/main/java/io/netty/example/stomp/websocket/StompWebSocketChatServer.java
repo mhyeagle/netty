@@ -18,20 +18,20 @@ package io.netty.example.stomp.websocket;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
 
 public class StompWebSocketChatServer {
 
     static final int PORT = Integer.parseInt(System.getProperty("port", "8080"));
 
     public void start(final int port) throws Exception {
-        NioEventLoopGroup boosGroup = new NioEventLoopGroup(1);
-        NioEventLoopGroup workerGroup = new NioEventLoopGroup();
+        EpollEventLoopGroup boosGroup = new EpollEventLoopGroup(1);
+        EpollEventLoopGroup workerGroup = new EpollEventLoopGroup();
         try {
             ServerBootstrap bootstrap = new ServerBootstrap()
                     .group(boosGroup, workerGroup)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .childHandler(new StompWebSocketChatServerInitializer("/chat"));
             bootstrap.bind(port).addListener(new ChannelFutureListener() {
                 @Override

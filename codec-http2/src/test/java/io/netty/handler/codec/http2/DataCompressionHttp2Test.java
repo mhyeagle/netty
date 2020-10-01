@@ -25,9 +25,9 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.ChannelPromise;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
 import io.netty.handler.codec.http2.Http2TestUtil.Http2Runnable;
@@ -298,8 +298,8 @@ public class DataCompressionHttp2Test {
                 any(ByteBuf.class), anyInt(), anyBoolean());
 
         final CountDownLatch serverChannelLatch = new CountDownLatch(1);
-        sb.group(new NioEventLoopGroup(), new NioEventLoopGroup());
-        sb.channel(NioServerSocketChannel.class);
+        sb.group(new EpollEventLoopGroup(), new EpollEventLoopGroup());
+        sb.channel(EpollServerSocketChannel.class);
         sb.childHandler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {
@@ -322,8 +322,8 @@ public class DataCompressionHttp2Test {
             }
         });
 
-        cb.group(new NioEventLoopGroup());
-        cb.channel(NioSocketChannel.class);
+        cb.group(new EpollEventLoopGroup());
+        cb.channel(EpollSocketChannel.class);
         cb.handler(new ChannelInitializer<Channel>() {
             @Override
             protected void initChannel(Channel ch) throws Exception {

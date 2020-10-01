@@ -109,8 +109,8 @@ public abstract class AbstractNioChannel extends AbstractChannel {
     }
 
     @Override
-    public NioEventLoop eventLoop() {
-        return (NioEventLoop) super.eventLoop();
+    public EpollEventLoop eventLoop() {
+        return (EpollEventLoop) super.eventLoop();
     }
 
     /**
@@ -369,7 +369,7 @@ public abstract class AbstractNioChannel extends AbstractChannel {
 
     @Override
     protected boolean isCompatible(EventLoop loop) {
-        return loop instanceof NioEventLoop;
+        return loop instanceof EpollEventLoop;
     }
 
     @Override

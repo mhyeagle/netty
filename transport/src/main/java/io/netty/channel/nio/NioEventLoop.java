@@ -54,9 +54,9 @@ import java.util.concurrent.atomic.AtomicLong;
  * {@link Selector} and so does the multi-plexing of these in the event loop.
  *
  */
-public final class NioEventLoop extends SingleThreadEventLoop {
+public final class EpollEventLoop extends SingleThreadEventLoop {
 
-    private static final InternalLogger logger = InternalLoggerFactory.getInstance(NioEventLoop.class);
+    private static final InternalLogger logger = InternalLoggerFactory.getInstance(EpollEventLoop.class);
 
     private static final int CLEANUP_INTERVAL = 256; // XXX Hard-coded value, but won't need customization.
 
@@ -132,7 +132,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     private int cancelledKeys;
     private boolean needsToSelectAgain;
 
-    NioEventLoop(NioEventLoopGroup parent, Executor executor, SelectorProvider selectorProvider,
+    EpollEventLoop(EpollEventLoopGroup parent, Executor executor, SelectorProvider selectorProvider,
                  SelectStrategy strategy, RejectedExecutionHandler rejectedExecutionHandler,
                  EventLoopTaskQueueFactory queueFactory) {
         super(parent, executor, false, newTaskQueue(queueFactory), newTaskQueue(queueFactory),
@@ -263,7 +263,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
     }
 
     /**
-     * Returns the {@link SelectorProvider} used by this {@link NioEventLoop} to obtain the {@link Selector}.
+     * Returns the {@link SelectorProvider} used by this {@link EpollEventLoop} to obtain the {@link Selector}.
      */
     public SelectorProvider selectorProvider() {
         return provider;
@@ -543,7 +543,7 @@ public final class NioEventLoop extends SingleThreadEventLoop {
             if (logger.isDebugEnabled()) {
                 logger.debug("Selector.select() returned prematurely because " +
                         "Thread.currentThread().interrupt() was called. Use " +
-                        "NioEventLoop.shutdownGracefully() to shutdown the NioEventLoop.");
+                        "EpollEventLoop.shutdownGracefully() to shutdown the EpollEventLoop.");
             }
             return true;
         }

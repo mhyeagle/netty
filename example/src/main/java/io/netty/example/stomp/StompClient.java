@@ -19,9 +19,9 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.stomp.StompSubframeAggregator;
 import io.netty.handler.codec.stomp.StompSubframeDecoder;
 import io.netty.handler.codec.stomp.StompSubframeEncoder;
@@ -41,10 +41,10 @@ public final class StompClient {
     static final String TOPIC = System.getProperty("topic", "jms.topic.exampleTopic");
 
     public static void main(String[] args) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         try {
             Bootstrap b = new Bootstrap();
-            b.group(group).channel(NioSocketChannel.class);
+            b.group(group).channel(EpollSocketChannel.class);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
                 protected void initChannel(SocketChannel ch) throws Exception {

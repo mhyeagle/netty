@@ -20,8 +20,8 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -70,12 +70,12 @@ public final class SpdyClient {
             .build();
 
         HttpResponseClientHandler httpResponseHandler = new HttpResponseClientHandler();
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        EventLoopGroup workerGroup = new EpollEventLoopGroup();
 
         try {
             Bootstrap b = new Bootstrap();
             b.group(workerGroup);
-            b.channel(NioSocketChannel.class);
+            b.channel(EpollSocketChannel.class);
             b.option(ChannelOption.SO_KEEPALIVE, true);
             b.remoteAddress(HOST, PORT);
             b.handler(new SpdyClientInitializer(sslCtx, httpResponseHandler));

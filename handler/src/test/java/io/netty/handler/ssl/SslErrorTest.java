@@ -22,9 +22,9 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
@@ -152,11 +152,11 @@ public class SslErrorTest {
 
         Channel serverChannel = null;
         Channel clientChannel = null;
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         final Promise<Void> promise = group.next().newPromise();
         try {
             serverChannel = new ServerBootstrap().group(group)
-                    .channel(NioServerSocketChannel.class)
+                    .channel(EpollServerSocketChannel.class)
                     .handler(new LoggingHandler(LogLevel.INFO))
                     .childHandler(new ChannelInitializer<Channel>() {
                         @Override
@@ -176,7 +176,7 @@ public class SslErrorTest {
                     }).bind(0).sync().channel();
 
             clientChannel = new Bootstrap().group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<Channel>() {
                         @Override
                         protected void initChannel(Channel ch) {

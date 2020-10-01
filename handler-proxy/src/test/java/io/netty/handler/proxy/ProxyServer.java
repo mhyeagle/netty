@@ -32,8 +32,8 @@ import io.netty.channel.EventLoop;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.ServerSocketChannel;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.util.CharsetUtil;
 import io.netty.util.NetUtil;
 import io.netty.util.ReferenceCountUtil;
@@ -92,7 +92,7 @@ abstract class ProxyServer {
         this.password = password;
 
         ServerBootstrap b = new ServerBootstrap();
-        b.channel(NioServerSocketChannel.class);
+        b.channel(EpollServerSocketChannel.class);
         b.group(ProxyHandlerTest.group);
         b.childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
@@ -208,7 +208,7 @@ abstract class ProxyServer {
 
         private ChannelFuture connectToDestination(EventLoop loop, ChannelHandler handler) {
             Bootstrap b = new Bootstrap();
-            b.channel(NioSocketChannel.class);
+            b.channel(EpollSocketChannel.class);
             b.group(loop);
             b.handler(handler);
             return b.connect(intermediaryDestination());

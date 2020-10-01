@@ -37,8 +37,8 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.http.DefaultFullHttpRequest;
 import io.netty.handler.codec.http.FullHttpRequest;
 import io.netty.handler.codec.http.FullHttpResponse;
@@ -88,12 +88,12 @@ public class OcspClientExample {
                 .build();
 
         try {
-            EventLoopGroup group = new NioEventLoopGroup();
+            EventLoopGroup group = new EpollEventLoopGroup();
             try {
                 Promise<FullHttpResponse> promise = group.next().newPromise();
 
                 Bootstrap bootstrap = new Bootstrap()
-                        .channel(NioSocketChannel.class)
+                        .channel(EpollSocketChannel.class)
                         .group(group)
                         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5 * 1000)
                         .handler(newClientHandler(context, host, promise));

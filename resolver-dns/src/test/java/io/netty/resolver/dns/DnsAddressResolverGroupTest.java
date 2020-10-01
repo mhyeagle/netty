@@ -17,7 +17,7 @@ package io.netty.resolver.dns;
 
 import io.netty.channel.DefaultEventLoopGroup;
 import io.netty.channel.EventLoop;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.resolver.AddressResolver;
 import io.netty.util.concurrent.Future;
@@ -33,7 +33,7 @@ import java.nio.channels.UnsupportedAddressTypeException;
 public class DnsAddressResolverGroupTest {
     @Test
     public void testUseConfiguredEventLoop() throws InterruptedException {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
         final EventLoop loop = group.next();
         DefaultEventLoopGroup defaultEventLoopGroup = new DefaultEventLoopGroup(1);
         DnsNameResolverBuilder builder = new DnsNameResolverBuilder()

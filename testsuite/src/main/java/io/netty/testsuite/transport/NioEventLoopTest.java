@@ -18,24 +18,24 @@ package io.netty.testsuite.transport;
 import io.netty.channel.Channel;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.ServerChannel;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 
-public class NioEventLoopTest extends AbstractSingleThreadEventLoopTest {
+public class EpollEventLoopTest extends AbstractSingleThreadEventLoopTest {
 
     @Override
     protected EventLoopGroup newEventLoopGroup() {
-        return new NioEventLoopGroup();
+        return new EpollEventLoopGroup();
     }
 
     @Override
     protected Channel newChannel() {
-        return new NioSocketChannel();
+        return new EpollSocketChannel();
     }
 
     @Override
     protected Class<? extends ServerChannel> serverChannelClass() {
-        return NioServerSocketChannel.class;
+        return EpollServerSocketChannel.class;
     }
 }

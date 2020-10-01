@@ -30,9 +30,9 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -82,7 +82,7 @@ public class ProxyHandlerTest {
     private static final String BAD_USERNAME = "badUser";
     private static final String BAD_PASSWORD = "badPassword";
 
-    static final EventLoopGroup group = new NioEventLoopGroup(3, new DefaultThreadFactory("proxy", true));
+    static final EventLoopGroup group = new EpollEventLoopGroup(3, new DefaultThreadFactory("proxy", true));
 
     static final SslContext serverSslCtx;
     static final SslContext clientSslCtx;
@@ -637,7 +637,7 @@ public class ProxyHandlerTest {
             final SuccessTestHandler testHandler = new SuccessTestHandler();
             Bootstrap b = new Bootstrap();
             b.group(group);
-            b.channel(NioSocketChannel.class);
+            b.channel(EpollSocketChannel.class);
             b.option(ChannelOption.AUTO_READ, this.autoRead);
             b.resolver(NoopAddressResolverGroup.INSTANCE);
             b.handler(new ChannelInitializer<SocketChannel>() {
@@ -686,7 +686,7 @@ public class ProxyHandlerTest {
             final FailureTestHandler testHandler = new FailureTestHandler();
             Bootstrap b = new Bootstrap();
             b.group(group);
-            b.channel(NioSocketChannel.class);
+            b.channel(EpollSocketChannel.class);
             b.resolver(NoopAddressResolverGroup.INSTANCE);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override
@@ -731,7 +731,7 @@ public class ProxyHandlerTest {
             final FailureTestHandler testHandler = new FailureTestHandler();
             Bootstrap b = new Bootstrap();
             b.group(group);
-            b.channel(NioSocketChannel.class);
+            b.channel(EpollSocketChannel.class);
             b.resolver(NoopAddressResolverGroup.INSTANCE);
             b.handler(new ChannelInitializer<SocketChannel>() {
                 @Override

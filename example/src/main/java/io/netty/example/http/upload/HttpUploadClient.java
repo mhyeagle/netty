@@ -19,8 +19,8 @@ import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.nio.EpollEventLoopGroup;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpRequest;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpHeaderValues;
@@ -101,7 +101,7 @@ public final class HttpUploadClient {
         }
 
         // Configure the client.
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
 
         // setup the factory: here using a mixed memory/disk based on size threshold
         HttpDataFactory factory = new DefaultHttpDataFactory(DefaultHttpDataFactory.MINSIZE); // Disk if MINSIZE exceed
@@ -113,7 +113,7 @@ public final class HttpUploadClient {
 
         try {
             Bootstrap b = new Bootstrap();
-            b.group(group).channel(NioSocketChannel.class).handler(new HttpUploadClientInitializer(sslCtx));
+            b.group(group).channel(EpollSocketChannel.class).handler(new HttpUploadClientInitializer(sslCtx));
 
             // Simple Get form: no factory used (not usable)
             List<Entry<String, String>> headers = formget(b, host, port, get, uriSimple);

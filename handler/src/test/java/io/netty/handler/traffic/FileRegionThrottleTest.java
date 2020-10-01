@@ -26,10 +26,10 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.DefaultFileRegion;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.handler.codec.LineBasedFrameDecoder;
 import io.netty.util.CharsetUtil;
 import org.junit.After;
@@ -83,7 +83,7 @@ public class FileRegionThrottleTest {
 
     @Before
     public void setUp() {
-        group = new NioEventLoopGroup();
+        group = new EpollEventLoopGroup();
     }
 
     @After
@@ -96,7 +96,7 @@ public class FileRegionThrottleTest {
         final CountDownLatch latch = new CountDownLatch(1);
         final GlobalTrafficShapingHandler gtsh = new GlobalTrafficShapingHandler(group, WRITE_LIMIT, 0);
         ServerBootstrap bs = new ServerBootstrap();
-        bs.group(group).channel(NioServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
+        bs.group(group).channel(EpollServerSocketChannel.class).childHandler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline().addLast(new LineBasedFrameDecoder(Integer.MAX_VALUE));
@@ -118,7 +118,7 @@ public class FileRegionThrottleTest {
 
     private ChannelFuture clientConnect(final SocketAddress server, final ReadHandler readHandler) throws Exception {
         Bootstrap bc = new Bootstrap();
-        bc.group(group).channel(NioSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
+        bc.group(group).channel(EpollSocketChannel.class).handler(new ChannelInitializer<SocketChannel>() {
             @Override
             protected void initChannel(SocketChannel ch) {
                 ch.pipeline().addLast(readHandler);

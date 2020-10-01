@@ -23,9 +23,9 @@ import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.nio.EpollEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
-import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.channel.socket.nio.EpollSocketChannel;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 import io.netty.handler.codec.dns.DefaultDnsQuestion;
@@ -71,7 +71,7 @@ public final class DoTClient {
     }
 
     public static void main(String[] args) throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup();
+        EventLoopGroup group = new EpollEventLoopGroup();
         try {
             final SslContext sslContext = SslContextBuilder.forClient()
                     .protocols("TLSv1.3", "TLSv1.2")
@@ -79,7 +79,7 @@ public final class DoTClient {
 
             Bootstrap b = new Bootstrap();
             b.group(group)
-                    .channel(NioSocketChannel.class)
+                    .channel(EpollSocketChannel.class)
                     .handler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel ch) {

@@ -25,7 +25,7 @@ import io.netty.channel.SelectStrategy;
 import io.netty.channel.SelectStrategyFactory;
 import io.netty.channel.SingleThreadEventLoop;
 import io.netty.channel.socket.ServerSocketChannel;
-import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.channel.socket.nio.EpollServerSocketChannel;
 import io.netty.util.IntSupplier;
 import io.netty.util.concurrent.DefaultEventExecutorChooserFactory;
 import io.netty.util.concurrent.DefaultThreadFactory;
@@ -52,28 +52,28 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
-public class NioEventLoopTest extends AbstractEventLoopTest {
+public class EpollEventLoopTest extends AbstractEventLoopTest {
 
     @Override
     protected EventLoopGroup newEventLoopGroup() {
-        return new NioEventLoopGroup();
+        return new EpollEventLoopGroup();
     }
 
     @Override
     protected Class<? extends ServerSocketChannel> newChannel() {
-        return NioServerSocketChannel.class;
+        return EpollServerSocketChannel.class;
     }
 
     @Test
     public void testRebuildSelector() {
-        EventLoopGroup group = new NioEventLoopGroup(1);
-        final NioEventLoop loop = (NioEventLoop) group.next();
+        EventLoopGroup group = new EpollEventLoopGroup(1);
+        final EpollEventLoop loop = (EpollEventLoop) group.next();
         try {
-            Channel channel = new NioServerSocketChannel();
+            Channel channel = new EpollServerSocketChannel();
             loop.register(channel).syncUninterruptibly();
 
             Selector selector = loop.unwrappedSelector();
-            assertSame(selector, ((NioEventLoop) channel.eventLoop()).unwrappedSelector());
+            assertSame(selector, ((EpollEventLoop) channel.eventLoop()).unwrappedSelector());
             assertTrue(selector.isOpen());
 
             // Submit to the EventLoop so we are sure its really executed in a non-async manner.
@@ -84,7 +84,7 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
                 }
             }).syncUninterruptibly();
 
-            Selector newSelector = ((NioEventLoop) channel.eventLoop()).unwrappedSelector();
+            Selector newSelector = ((EpollEventLoop) channel.eventLoop()).unwrappedSelector();
             assertTrue(newSelector.isOpen());
             assertNotSame(selector, newSelector);
             assertFalse(selector.isOpen());
@@ -97,7 +97,7 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
 
     @Test
     public void testScheduleBigDelayNotOverflow() {
-        EventLoopGroup group = new NioEventLoopGroup(1);
+        EventLoopGroup group = new EpollEventLoopGroup(1);
 
         final EventLoop el = group.next();
         Future<?> future = el.schedule(new Runnable() {
@@ -114,8 +114,8 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
 
     @Test
     public void testInterruptEventLoopThread() throws Exception {
-        EventLoopGroup group = new NioEventLoopGroup(1);
-        final NioEventLoop loop = (NioEventLoop) group.next();
+        EventLoopGroup group = new EpollEventLoopGroup(1);
+        final EpollEventLoop loop = (EpollEventLoop) group.next();
         try {
             Selector selector = loop.unwrappedSelector();
             assertTrue(selector.isOpen());
@@ -157,11 +157,11 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
 
     @Test(timeout = 3000)
     public void testSelectableChannel() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
-        NioEventLoop loop = (NioEventLoop) group.next();
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
+        EpollEventLoop loop = (EpollEventLoop) group.next();
 
         try {
-            Channel channel = new NioServerSocketChannel();
+            Channel channel = new EpollServerSocketChannel();
             loop.register(channel).syncUninterruptibly();
             channel.bind(new InetSocketAddress(0)).syncUninterruptibly();
 
@@ -203,8 +203,8 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
         };
         // Just run often enough to trigger it normally.
         for (int i = 0; i < 1000; i++) {
-            NioEventLoopGroup group = new NioEventLoopGroup(1);
-            final NioEventLoop loop = (NioEventLoop) group.next();
+            EpollEventLoopGroup group = new EpollEventLoopGroup(1);
+            final EpollEventLoop loop = (EpollEventLoop) group.next();
 
             Thread t = new Thread(new Runnable() {
                 @Override
@@ -248,16 +248,16 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
             }
         };
 
-        EventLoopGroup group = new NioEventLoopGroup(1, new DefaultThreadFactory("ioPool"),
+        EventLoopGroup group = new EpollEventLoopGroup(1, new DefaultThreadFactory("ioPool"),
                                                      SelectorProvider.provider(), selectStrategyFactory);
-        final NioEventLoop loop = (NioEventLoop) group.next();
+        final EpollEventLoop loop = (EpollEventLoop) group.next();
         try {
-            Channel channel = new NioServerSocketChannel();
+            Channel channel = new EpollServerSocketChannel();
             Selector selector = loop.unwrappedSelector();
 
             loop.register(channel).syncUninterruptibly();
 
-            Selector newSelector = ((NioEventLoop) channel.eventLoop()).unwrappedSelector();
+            Selector newSelector = ((EpollEventLoop) channel.eventLoop()).unwrappedSelector();
             assertTrue(newSelector.isOpen());
             assertNotSame(selector, newSelector);
             assertFalse(selector.isOpen());
@@ -270,12 +270,12 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
 
     @Test(timeout = 3000L)
     public void testChannelsRegistered() throws Exception {
-        NioEventLoopGroup group = new NioEventLoopGroup(1);
-        final NioEventLoop loop = (NioEventLoop) group.next();
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1);
+        final EpollEventLoop loop = (EpollEventLoop) group.next();
 
         try {
-            final Channel ch1 = new NioServerSocketChannel();
-            final Channel ch2 = new NioServerSocketChannel();
+            final Channel ch1 = new EpollServerSocketChannel();
+            final Channel ch2 = new EpollServerSocketChannel();
 
             assertEquals(0, registeredChannels(loop));
 
@@ -310,8 +310,8 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
     @Test
     public void testCustomQueue()  {
         final AtomicBoolean called = new AtomicBoolean();
-        NioEventLoopGroup group = new NioEventLoopGroup(1,
-                new ThreadPerTaskExecutor(new DefaultThreadFactory(NioEventLoopGroup.class)),
+        EpollEventLoopGroup group = new EpollEventLoopGroup(1,
+                new ThreadPerTaskExecutor(new DefaultThreadFactory(EpollEventLoopGroup.class)),
                 DefaultEventExecutorChooserFactory.INSTANCE, SelectorProvider.provider(),
                 DefaultSelectStrategyFactory.INSTANCE, RejectedExecutionHandlers.reject(),
                 new EventLoopTaskQueueFactory() {
@@ -322,7 +322,7 @@ public class NioEventLoopTest extends AbstractEventLoopTest {
                     }
         });
 
-        final NioEventLoop loop = (NioEventLoop) group.next();
+        final EpollEventLoop loop = (EpollEventLoop) group.next();
 
         try {
             loop.submit(new Runnable() {
